@@ -1,16 +1,23 @@
 [
   {
     "speed": 100,
-    "hp": 1,
+    "hp": 2,
     "shape": "circle",
     "colour": "#faa",
     "diameter": 37.5
   },
   {
     "speed": 75,
-    "hp": 2,
+    "hp": 3,
     "shape": "circle",
     "colour": "#dd0",
     "diameter": 50
+  },
+  {
+    "speed": 125,
+    "hp": 1,
+    "shape": "circle",
+    "colour": "#00d",
+    "diameter": 25
   }
 ]
