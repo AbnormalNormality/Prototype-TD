@@ -1,0 +1,41 @@
+[
+  {
+    "shape": "circle",
+    "colour": "#0d0",
+    "diameter": 37.5,
+    "radius": 166,
+    "cooldown": 1000,
+    "projectile": {
+      "speed": 250,
+      "pierce": 1,
+      "damage": 1
+    },
+    "cost": 10
+  },
+  {
+    "shape": "circle",
+    "colour": "#a0a",
+    "diameter": 37.5,
+    "radius": 1415,
+    "cooldown": 2500,
+    "projectile": {
+      "speed": 1000000,
+      "pierce": 1,
+      "damage": 1
+    },
+    "cost": 20
+  },
+  {
+    "shape": "circle",
+    "colour": "#a00",
+    "diameter": 37.5,
+    "radius": 250,
+    "cooldown": 250,
+    "projectile": {
+      "speed": 20,
+      "pierce": 1,
+      "damage": 1
+    },
+    "cost": 20
+  }
+]
