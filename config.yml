@@ -1,0 +1,2 @@
+include:
+  - src/scripts/main.ts
