@@ -1,5 +1,6 @@
 type Point = { x: number; y: number };
 type SHAPE = "circle" | "square";
+type TARGET = "first" | "last" | "strong" | "weak" | "close" | "far";
 type TowerData = {
   shape: SHAPE;
   colour: string;
@@ -12,6 +13,7 @@ type TowerData = {
     damage: number;
   };
   cost: number;
+  target: TARGET;
 };
 type EnemyData = {
   speed: number;
@@ -58,12 +60,12 @@ class Entity {
   y: number;
   speed: number = 0;
   angle: number = Math.PI / 2;
-  hp: number;
+  hp: number = 1;
 
   targetPoint: Point | null = null;
 
   shape: Shape;
-  colour: string;
+  colour: string = "#000";
 
   constructor(x: number, y: number, shape: Shape) {
     this.x = x;
@@ -138,6 +140,7 @@ class Tower extends Entity {
   colour: string = "#0d0";
 
   cost: number = 0;
+  target: TARGET = "first";
 
   constructor(x: number, y: number) {
     super(x, y, new Shape("circle", 37.5));
@@ -165,48 +168,80 @@ class Tower extends Entity {
     const elapsedTime = now - this.lastShot;
     if (elapsedTime < this.cooldown) return;
 
-    let closestEnemy: Enemy | null = null;
-    let highestPathProgress = -1;
-    let closestDistToNext = Infinity;
+    // Build list of enemies in range with needed data
+    const inRangeEnemies = enemies
+      .filter((e) => {
+        const r = e.effectiveRadius;
+        return (
+          e.x + r >= 0 &&
+          e.x - r <= canvas.width &&
+          e.y + r >= 0 &&
+          e.y - r <= canvas.height &&
+          distance(e.x, e.y, this.x, this.y) <= this.radius + r
+        );
+      })
+      .map((e) => ({
+        enemy: e,
+        pathProgress: e.pathProgress,
+        distToTower: distance(e.x, e.y, this.x, this.y),
+        hp: e.hp,
+        distToNext: distance(e.x, e.y, e.currentPath.x, e.currentPath.y),
+      }));
 
-    for (const e of enemies) {
-      const r = e.effectiveRadius;
-      if (
-        e.x + r >= 0 &&
-        e.x - r <= canvas.width &&
-        e.y + r >= 0 &&
-        e.y - r <= canvas.height
-      ) {
-        const dist = distance(e.x, e.y, this.x, this.y);
-        if (dist <= this.radius + r) {
-          const pathProgress = e.pathProgress;
-          const distToNext = distance(
-            e.x,
-            e.y,
-            e.currentPath.x,
-            e.currentPath.y
-          );
+    if (inRangeEnemies.length === 0) return;
 
-          if (
-            pathProgress > highestPathProgress ||
-            (pathProgress === highestPathProgress &&
-              distToNext < closestDistToNext)
-          ) {
-            highestPathProgress = pathProgress;
-            closestDistToNext = distToNext;
-            closestEnemy = e;
-          }
-        }
+    inRangeEnemies.sort((a, b) => {
+      // Always sort by furthest along track first (descending pathProgress)
+      if (a.pathProgress !== b.pathProgress) {
+        return b.pathProgress - a.pathProgress;
       }
-    }
 
-    if (closestEnemy) {
+      // Tie-breaker depends on this.target
+      switch (this.target) {
+        case "first":
+          // No further tie-break needed, already sorted by pathProgress
+          return 0;
+
+        case "last":
+          // Want enemy least along the path, so ascending pathProgress
+          return a.pathProgress - b.pathProgress;
+
+        case "strong":
+          // Higher HP first
+          if (b.hp !== a.hp) return b.hp - a.hp;
+          return 0;
+
+        case "weak":
+          // Lower HP first
+          if (a.hp !== b.hp) return a.hp - b.hp;
+          return 0;
+
+        case "close":
+          // Closer to tower first
+          if (a.distToTower !== b.distToTower)
+            return a.distToTower - b.distToTower;
+          return 0;
+
+        case "far":
+          // Farther from tower first
+          if (b.distToTower !== a.distToTower)
+            return b.distToTower - a.distToTower;
+          return 0;
+
+        default:
+          return 0;
+      }
+    });
+
+    const targetEnemy = inRangeEnemies[0].enemy;
+
+    if (targetEnemy) {
       const proj = new Projectile(
         this.x,
         this.y,
         new Shape("circle", 12.5),
         this,
-        closestEnemy.position
+        targetEnemy.position
       );
       projectiles.push(proj);
       this.lastShot = now;
@@ -223,6 +258,7 @@ class Tower extends Entity {
     tower.projPierce = data.projectile.pierce;
     tower.projDamage = data.projectile.damage;
     tower.cost = data.cost;
+    tower.target = data.target;
     return tower;
   }
 }
@@ -269,6 +305,7 @@ class Enemy extends Entity {
     enemy.hp = data.hp;
     enemy.shape = new Shape(data.shape, data.diameter);
     enemy.colour = data.colour;
+    enemy.speed = data.speed;
     return enemy;
   }
 }

@@ -14,10 +14,24 @@
     "diameter": 50
   },
   {
-    "speed": 125,
+    "speed": 150,
     "hp": 1,
     "shape": "circle",
     "colour": "#00d",
     "diameter": 25
+  },
+  {
+    "speed": 50,
+    "hp": 5,
+    "shape": "circle",
+    "colour": "#a0a",
+    "diameter": 60
+  },
+  {
+    "speed": 120,
+    "hp": 1,
+    "shape": "circle",
+    "colour": "#0af",
+    "diameter": 20
   }
 ]

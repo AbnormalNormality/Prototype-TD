@@ -10,20 +10,22 @@
       "pierce": 1,
       "damage": 1
     },
-    "cost": 10
+    "cost": 10,
+    "target": "first"
   },
   {
     "shape": "circle",
     "colour": "#a0a",
     "diameter": 37.5,
     "radius": 1415,
-    "cooldown": 2500,
+    "cooldown": 2000,
     "projectile": {
       "speed": 1000000,
       "pierce": 1,
-      "damage": 1
+      "damage": 2
     },
-    "cost": 20
+    "cost": 20,
+    "target": "strong"
   },
   {
     "shape": "circle",
@@ -36,6 +38,7 @@
       "pierce": 1,
       "damage": 0.1
     },
-    "cost": 20
+    "cost": 20,
+    "target": "close"
   }
 ]
