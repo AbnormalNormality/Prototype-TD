@@ -19,7 +19,7 @@
     "radius": 1415,
     "cooldown": 2500,
     "projectile": {
-      "speed": 1415,
+      "speed": 14150,
       "pierce": 1,
       "damage": 1
     },
